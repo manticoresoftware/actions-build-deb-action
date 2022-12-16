@@ -3,4 +3,5 @@ Version: {VERSION}
 Installed-Size: {INSTALLED_SIZE}
 Architecture: {ARCH}
 Maintainer: {MAINTAINER}
+License: {LICENSE}git st
 {DEPENDS}{DESC}

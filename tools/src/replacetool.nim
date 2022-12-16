@@ -2,7 +2,7 @@ import os, strutils, parseopt
 
 type
   Options = object
-    debianDir, package, maintainer, version, installedSize, depends, arch, desc: string
+    debianDir, package, maintainer, version, installedSize, depends, arch, desc, license: string
 
 proc getCmdOpts(params: seq[string]): Options =
   var optParser = initOptParser(params)
@@ -26,6 +26,8 @@ proc getCmdOpts(params: seq[string]): Options =
         result.arch = val
       of "description":
         result.desc = val
+      of "license":
+        result.license = val
     of cmdEnd:
       assert false # cannot happen
     else:
@@ -42,6 +44,7 @@ proc replaceTemplate(body, package, maintainer, version, installedSize, arch,
       .replace("{ARCH}", arch)
       .replace("{DEPENDS}", depends)
       .replace("{DESC}", desc)
+      .replace("{LICENSE}", license)
 
 proc formatDescription(desc: string): string =
   "Description: " & desc
@@ -54,13 +57,13 @@ proc formatDepends(depends: string): string =
       ""
 
 proc fixFile(file, package, maintainer, version, installedSize, arch, depends,
-    desc: string) =
+    desc, license: string) =
   let
     body = readFile(file)
     fixedBody = replaceTemplate(body, package = package, maintainer = maintainer,
                                 version = version,
                                 installedSize = installedSize, arch = arch,
-                                depends = depends, desc = desc)
+                                depends = depends, desc = desc, license = license)
   writeFile(file, fixedBody)
 
 let
@@ -76,6 +79,7 @@ let
   arch = params.arch
   depends = params.depends.formatDepends
   desc = params.desc.formatDescription
+  license = params.license
 
 fixFile(controlFile, package = package, maintainer = maintainer, version = version,
-        installedSize = installedSize, arch = arch, depends = depends, desc = desc)
+        installedSize = installedSize, arch = arch, depends = depends, desc = desc, license = license)
